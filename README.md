@@ -1,4 +1,6 @@
 # Simple Supplies
+[Nexusmods](https://www.nexusmods.com/ixion/mods/12)  
+<br>
 This mod makes the supplies you find in IXION less of a hassle. When you load the game it compresses all supplies of one type into one big one.
 > [!WARNING]
 This is permanent! If you save your game after this mod has taken effect, you cannot undo it!
