@@ -17,33 +17,43 @@ public class Plugin : BasePlugin
 {
     private const string Guid = "captnced.SimpleSupplies";
     private const string Name = "SimpleSupplies";
-    private const string Version = "1.0.0";
+    private const string Version = "1.1.0";
     internal new static ManualLogSource Log;
-    internal static SettingsHelper.BooleanSetting setting;
-    internal static bool helperPresent;
+    private static Harmony harmony;
+    private static bool enabled = true;
 
     public override void Load()
     {
         Log = base.Log;
+        harmony = new Harmony(Guid);
+        if (IL2CPPChainloader.Instance.Plugins.ContainsKey("captnced.IMHelper")) enabled = ModsMenu.isSelfEnabled();
+        if (!enabled)
+            Log.LogInfo("Disabled by IMHelper!");
+        else
+            init();
+    }
+
+    private static void init()
+    {
         SceneManager.activeSceneChanged += (UnityAction<Scene, Scene>)sceneChangedListener;
-        var harmony = new Harmony(Guid);
         harmony.PatchAll();
         foreach (var patch in harmony.GetPatchedMethods())
             Log.LogInfo("Patched " + patch.DeclaringType + ":" + patch.Name);
-        if (IL2CPPChainloader.Instance.Plugins.ContainsKey("captnced.IMHelper")) addHelperSetting();
         Log.LogInfo("Loaded \"" + Name + "\" version " + Version + "!");
     }
 
-    internal static void addHelperSetting()
+    private static void disable()
     {
-        helperPresent = true;
-        var section = new SettingsHelper.SettingsSection("SimpleSupplies");
-        setting = new SettingsHelper.BooleanSetting(section, "Enabled", "Enables/disables this mod", true, false);
+        SceneManager.activeSceneChanged -= (UnityAction<Scene, Scene>)sceneChangedListener;
+        harmony.UnpatchSelf();
+        Log.LogInfo("Unloaded \"" + Name + "\" version " + Version + "!");
     }
 
-    internal static bool getSettingValue()
+    public static void enable(bool value)
     {
-        return setting.getValue();
+        enabled = value;
+        if (enabled) init();
+        else disable();
     }
 
     internal static void sceneChangedListener(Scene current, Scene next)

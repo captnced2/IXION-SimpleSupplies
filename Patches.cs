@@ -21,9 +21,6 @@ public class Patches
         {
             if (state == Game.STATE.PLAYING)
             {
-                if (Plugin.helperPresent)
-                    if (!Plugin.getSettingValue())
-                        return;
                 if (init) return;
                 init = true;
                 var rn = new Random();
@@ -50,7 +47,7 @@ public class Patches
 
                         var newSupply = resourceBuildings[rn.Next(resourceBuildings.Count)];
                         foreach (var b in resourceBuildings)
-                            if (!(b == newSupply))
+                            if (b != newSupply)
                             {
                                 newSupply.amount += b.amount;
                                 b.instance.availableStock.GetStored().Resources.RemoveAllResources();
@@ -68,9 +65,6 @@ public class Patches
     {
         public static void Postfix(BuildingBehaviour __instance)
         {
-            if (Plugin.helperPresent)
-                if (!Plugin.getSettingValue())
-                    return;
             if (__instance.Data.name.ToLower().Contains("supplies") ||
                 __instance.Data.name.ToLower().Contains("debris"))
             {
